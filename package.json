@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "tsx server.ts",
     "build": "next build",
-    "start": "next start",
-    "dev:standalone": "tsx server.ts",
-    "start:standalone": "tsx server.ts",
+    "start": "tsx server.ts",
+    "dev:next": "next dev",
     "lint": "eslint"
   },
   "dependencies": {
