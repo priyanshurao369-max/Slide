@@ -40,7 +40,6 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative z-10 mx-auto max-w-4xl px-6 py-12 sm:py-16 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50/80 px-3 py-1 mb-6 text-[11px] font-mono text-neutral-600 shadow-sm">
-          <span>▲</span>
           <span>Matter.js Physics v0.20</span>
           <span className="text-neutral-300">•</span>
           <span>Ideal Specular Collision</span>

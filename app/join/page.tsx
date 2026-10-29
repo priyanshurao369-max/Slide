@@ -47,13 +47,6 @@ export default function JoinPage() {
     return (
       <main className="flex h-dvh w-screen flex-col items-center justify-center p-6 bg-white text-neutral-900 select-none font-sans">
         <div className="w-full max-w-sm rounded-2xl border border-neutral-200/90 bg-white p-8 shadow-[0_12px_32px_rgba(0,0,0,0.06)] text-center">
-          <svg
-            className="mx-auto h-6 w-6 text-black mb-4"
-            viewBox="0 0 76 65"
-            fill="currentColor"
-          >
-            <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-          </svg>
           <h2 className="text-xl font-bold tracking-tight text-neutral-950 mb-1">
             Session Terminated
           </h2>
@@ -77,13 +70,6 @@ export default function JoinPage() {
         {/* Vercel Dark Mobile Top Bar */}
         <header className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md">
           <div className="flex items-center gap-2.5">
-            <svg
-              className="h-3.5 w-3.5 text-white"
-              viewBox="0 0 76 65"
-              fill="currentColor"
-            >
-              <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-            </svg>
             <div className="text-xs font-mono font-medium text-neutral-300">
               slide <span className="text-neutral-600">/</span> controller
             </div>
@@ -152,13 +138,6 @@ export default function JoinPage() {
       <div className="w-full max-w-sm rounded-2xl border border-neutral-200/90 bg-white p-7 sm:p-8 shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
         {/* Header */}
         <div className="text-center mb-6">
-          <svg
-            className="mx-auto h-5 w-5 text-black mb-3"
-            viewBox="0 0 76 65"
-            fill="currentColor"
-          >
-            <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-          </svg>
           <div className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 mb-1">
             Controller Pairing
           </div>
@@ -213,3 +192,4 @@ export default function JoinPage() {
     </main>
   );
 }
+
