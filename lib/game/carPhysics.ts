@@ -1,6 +1,5 @@
 import Matter from "matter-js";
 import type { InputState } from "./controls";
-import { CAR_WIDTH, CAR_HEIGHT } from "./createWorld";
 
 const THRUST = 0.00308;
 const MAX_SPEED = 9.1;
@@ -10,8 +9,6 @@ const TURN_SMOOTHING = 0.25;
 export function updateCarPhysics(
   car: Matter.Body,
   input: InputState,
-  arenaWidth?: number,
-  arenaHeight?: number,
 ) {
   let moveX = 0;
   let moveY = 0;
@@ -28,7 +25,6 @@ export function updateCarPhysics(
     const normX = moveX / length;
     const normY = moveY / length;
 
-    // Ideal Newtonian motion: F = m * a
     Matter.Body.applyForce(car, car.position, {
       x: normX * THRUST,
       y: normY * THRUST,
@@ -45,7 +41,7 @@ export function updateCarPhysics(
     }
   }
 
-  // Ideal kinetic Coulomb friction: constant deceleration magnitude
+  // Constant Coulomb friction: constant deceleration magnitude
   const speed = Math.hypot(car.velocity.x, car.velocity.y);
   if (speed > 0) {
     const nextSpeed = Math.max(0, speed - CONSTANT_FRICTION);
@@ -59,7 +55,7 @@ export function updateCarPhysics(
       });
     }
 
-    // When coasting without input, face the direction of motion or bounce
+    // When coasting without input, face direction of motion
     if (!hasInput && speed > 0.3) {
       const moveAngle = Math.atan2(car.velocity.x, -car.velocity.y);
       let diff = moveAngle - car.angle;
@@ -72,6 +68,7 @@ export function updateCarPhysics(
     }
   }
 
+  // Zero angular velocity — we do rotation manually
   Matter.Body.setAngularVelocity(car, 0);
 
   // Speed clamp
@@ -82,27 +79,5 @@ export function updateCarPhysics(
       x: car.velocity.x * scale,
       y: car.velocity.y * scale,
     });
-  }
-
-  // Ideal specular elastic boundary reflection (restitution = 1, angle of incidence = angle of reflection)
-  if (arenaWidth !== undefined && arenaHeight !== undefined) {
-    const halfW = CAR_WIDTH / 2;
-    const halfH = CAR_HEIGHT / 2;
-
-    if (car.position.x <= halfW && car.velocity.x < 0) {
-      Matter.Body.setVelocity(car, { x: -car.velocity.x, y: car.velocity.y });
-      Matter.Body.setPosition(car, { x: halfW, y: car.position.y });
-    } else if (car.position.x >= arenaWidth - halfW && car.velocity.x > 0) {
-      Matter.Body.setVelocity(car, { x: -car.velocity.x, y: car.velocity.y });
-      Matter.Body.setPosition(car, { x: arenaWidth - halfW, y: car.position.y });
-    }
-
-    if (car.position.y <= halfH && car.velocity.y < 0) {
-      Matter.Body.setVelocity(car, { x: car.velocity.x, y: -car.velocity.y });
-      Matter.Body.setPosition(car, { x: car.position.x, y: halfH });
-    } else if (car.position.y >= arenaHeight - halfH && car.velocity.y > 0) {
-      Matter.Body.setVelocity(car, { x: car.velocity.x, y: -car.velocity.y });
-      Matter.Body.setPosition(car, { x: car.position.x, y: arenaHeight - halfH });
-    }
   }
 }

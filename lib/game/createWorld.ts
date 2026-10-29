@@ -5,6 +5,15 @@ const CAR_SIZE = 36;
 const CAR_WIDTH = CAR_SIZE;
 const CAR_HEIGHT = CAR_SIZE;
 
+const WALL_OPTIONS: Matter.IBodyDefinition = {
+  isStatic: true,
+  restitution: 1,
+  friction: 0,
+  frictionStatic: 0,
+  frictionAir: 0,
+  label: "wall",
+};
+
 export type CarConfig = {
   id: string;
   slot: number;
@@ -20,7 +29,6 @@ export type CarEntity = {
 
 export type GameWorld = {
   engine: Matter.Engine;
-  car: Matter.Body;
   cars: CarEntity[];
   walls: Matter.Body[];
   width: number;
@@ -34,7 +42,7 @@ export function getSpawnPosition(
 ): { x: number; y: number } {
   const cx = width / 2;
   const cy = height / 2;
-  const offset = 64;
+  const offset = 80;
   switch (slot % 4) {
     case 0:
       return { x: cx, y: cy - offset };
@@ -59,10 +67,46 @@ export function createCarBody(
     friction: 0,
     frictionStatic: 0,
     density: 0.004,
-    restitution: 1,
-    inertia: Infinity,
+    restitution: 0.6,
     label,
   });
+}
+
+function buildWalls(width: number, height: number): Matter.Body[] {
+  return [
+    // Top
+    Matter.Bodies.rectangle(
+      width / 2,
+      -WALL_THICKNESS / 2,
+      width + WALL_THICKNESS * 2,
+      WALL_THICKNESS,
+      WALL_OPTIONS,
+    ),
+    // Bottom
+    Matter.Bodies.rectangle(
+      width / 2,
+      height + WALL_THICKNESS / 2,
+      width + WALL_THICKNESS * 2,
+      WALL_THICKNESS,
+      WALL_OPTIONS,
+    ),
+    // Left
+    Matter.Bodies.rectangle(
+      -WALL_THICKNESS / 2,
+      height / 2,
+      WALL_THICKNESS,
+      height + WALL_THICKNESS * 2,
+      WALL_OPTIONS,
+    ),
+    // Right
+    Matter.Bodies.rectangle(
+      width + WALL_THICKNESS / 2,
+      height / 2,
+      WALL_THICKNESS,
+      height + WALL_THICKNESS * 2,
+      WALL_OPTIONS,
+    ),
+  ];
 }
 
 export function createWorld(
@@ -74,45 +118,7 @@ export function createWorld(
     gravity: { x: 0, y: 0, scale: 0 },
   });
 
-  const wallOptions = {
-    isStatic: true,
-    restitution: 1,
-    friction: 0,
-    frictionStatic: 0,
-    label: "wall",
-  };
-
-  const walls = [
-    Matter.Bodies.rectangle(
-      width / 2,
-      -WALL_THICKNESS / 2,
-      width + WALL_THICKNESS * 2,
-      WALL_THICKNESS,
-      wallOptions,
-    ),
-    Matter.Bodies.rectangle(
-      width / 2,
-      height + WALL_THICKNESS / 2,
-      width + WALL_THICKNESS * 2,
-      WALL_THICKNESS,
-      wallOptions,
-    ),
-    Matter.Bodies.rectangle(
-      -WALL_THICKNESS / 2,
-      height / 2,
-      WALL_THICKNESS,
-      height + WALL_THICKNESS * 2,
-      wallOptions,
-    ),
-    Matter.Bodies.rectangle(
-      width + WALL_THICKNESS / 2,
-      height / 2,
-      WALL_THICKNESS,
-      height + WALL_THICKNESS * 2,
-      wallOptions,
-    ),
-  ];
-
+  const walls = buildWalls(width, height);
   const cars: CarEntity[] = [];
 
   if (carConfigs && carConfigs.length > 0) {
@@ -137,16 +143,11 @@ export function createWorld(
     });
   }
 
-  const bodiesToAdd = [
-    ...cars.map((c) => c.body),
-    ...walls,
-  ];
-
+  const bodiesToAdd = [...cars.map((c) => c.body), ...walls];
   Matter.Composite.add(engine.world, bodiesToAdd);
 
   return {
     engine,
-    car: cars[0].body,
     cars,
     walls,
     width,
@@ -184,52 +185,16 @@ export function removeCar(world: GameWorld, id: string) {
 export function resizeWorld(world: GameWorld, width: number, height: number) {
   const { walls, engine } = world;
 
-  Matter.Composite.remove(engine.world, walls);
+  Matter.Composite.remove(engine.world, walls as unknown as Matter.Body);
 
-  const wallOptions = {
-    isStatic: true,
-    restitution: 1,
-    friction: 0,
-    frictionStatic: 0,
-    label: "wall",
-  };
-
-  const nextWalls = [
-    Matter.Bodies.rectangle(
-      width / 2,
-      -WALL_THICKNESS / 2,
-      width + WALL_THICKNESS * 2,
-      WALL_THICKNESS,
-      wallOptions,
-    ),
-    Matter.Bodies.rectangle(
-      width / 2,
-      height + WALL_THICKNESS / 2,
-      width + WALL_THICKNESS * 2,
-      WALL_THICKNESS,
-      wallOptions,
-    ),
-    Matter.Bodies.rectangle(
-      -WALL_THICKNESS / 2,
-      height / 2,
-      WALL_THICKNESS,
-      height + WALL_THICKNESS * 2,
-      wallOptions,
-    ),
-    Matter.Bodies.rectangle(
-      width + WALL_THICKNESS / 2,
-      height / 2,
-      WALL_THICKNESS,
-      height + WALL_THICKNESS * 2,
-      wallOptions,
-    ),
-  ];
-
+  const nextWalls = buildWalls(width, height);
   Matter.Composite.add(engine.world, nextWalls);
 
+  const halfW = CAR_WIDTH / 2;
+  const halfH = CAR_HEIGHT / 2;
   for (const car of world.cars) {
-    const x = Math.min(Math.max(car.body.position.x, CAR_WIDTH), width - CAR_WIDTH);
-    const y = Math.min(Math.max(car.body.position.y, CAR_HEIGHT), height - CAR_HEIGHT);
+    const x = Math.min(Math.max(car.body.position.x, halfW), width - halfW);
+    const y = Math.min(Math.max(car.body.position.y, halfH), height - halfH);
     Matter.Body.setPosition(car.body, { x, y });
   }
 

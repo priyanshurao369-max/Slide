@@ -63,9 +63,12 @@ export default function GameCanvas() {
       const dt = Math.min(now - last, 32);
       last = now;
 
-      updateCarPhysics(world.car, input, world.width, world.height);
+      // Solo mode: drive the single car
+      for (const car of world.cars) {
+        updateCarPhysics(car.body, input);
+      }
       Matter.Engine.update(world.engine, dt);
-      renderFrame(ctx, world.width, world.height, world.car);
+      renderFrame(ctx, world.width, world.height, world.cars);
 
       raf = requestAnimationFrame(tick);
     };
@@ -91,7 +94,7 @@ export default function GameCanvas() {
         onDirectionChange={(direction, pressed) => {
           setDirection(inputRef.current, direction, pressed);
         }}
-        className="pointer-events-none absolute bottom-6 left-6 sm:bottom-8 sm:left-8"
+        className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8"
       />
     </div>
   );

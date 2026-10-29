@@ -42,6 +42,8 @@ export type JoinResponse = {
 export type CreateResponse = {
   ok: boolean;
   code: string;
+  lanIp: string;
+  port: number;
 };
 
 export type ControllerInputPayload = {

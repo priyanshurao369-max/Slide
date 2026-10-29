@@ -33,7 +33,11 @@ function getLocalIp(): string {
 
 app.prepare().then(() => {
   const server = http.createServer((req, res) => {
-    handle(req, res);
+    handle(req, res).catch((err) => {
+      console.error("Next.js handler error:", err);
+      res.statusCode = 500;
+      res.end("Internal Server Error");
+    });
   });
 
   const io = new SocketIOServer(server, {
@@ -62,7 +66,7 @@ app.prepare().then(() => {
         room: getRoomState(res.room),
       });
 
-      // Notify the room (especially host screen)
+      // Notify the host screen
       io.to(res.room.code).emit("room:state", getRoomState(res.room));
       if (res.room.started) {
         socket.emit("room:started");
@@ -109,5 +113,6 @@ app.prepare().then(() => {
     const lanIp = getLocalIp();
     console.log(`> Ready on http://localhost:${port}`);
     console.log(`> Network: http://${lanIp}:${port}`);
+    console.log(`> Phones join at: http://${lanIp}:${port}/join`);
   });
 });
