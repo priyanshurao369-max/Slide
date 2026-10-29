@@ -19,13 +19,6 @@ export default function Home() {
       <header className="relative z-10 border-b border-neutral-200/80 bg-white/80 px-6 py-3.5 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <svg
-              className="h-4 w-4 text-black"
-              viewBox="0 0 76 65"
-              fill="currentColor"
-            >
-              <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-            </svg>
             <div className="flex items-center gap-2 text-xs font-mono">
               <span className="font-semibold text-neutral-900">slide</span>
               <span className="text-neutral-300">/</span>
